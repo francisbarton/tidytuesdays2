@@ -2,20 +2,22 @@
 title: The Simpsons x tidytuesday
 date: today
 author:
-  name: Fran Barton
-  email: francis.barton@nhs.net
+  -
+    name: Fran Barton
+  -
+    name: Gabriel Hobro
 lang: en-GB
 format: quafira-html
 embed-resources: true
 fig-dpi: 144
-fig-height: 10
-fig-width: 16.18
+fig-height: 6
+fig-width: 9
 fig-responsive: true
 lightbox: true
 out-width: 92%
 code-fold: true
 execute:
-  warning: true
+  warning: false
   error: false
 knitr:
   opts_knit:
@@ -23,15 +25,20 @@ knitr:
 ---
 
 ```{r setup}
+
+# quarto use template francisbarton/quafira
+
 library(dplyr)
 library(ggplot2)
 library(snakecase)
 library(readr)
+library(tvthemes)
 
 ```
 
 ```{r data-in}
 #| cache: true
+
 gh_tt_base <- "https://raw.githubusercontent.com/rfordatascience/tidytuesday/"
 gh_tt_base_data <- paste0(gh_tt_base, "main/data/")
 tt_date <- "2025/2025-02-04/"
@@ -40,9 +47,7 @@ rcsv <- \(x, ...) read_csv(paste0(gh_tt_base_data, tt_date, x), ...)
 
 characters <- rcsv("simpsons_characters.csv", col_types = "dccc")
 episodes <- rcsv("simpsons_episodes.csv", col_types = "dcddddDdcdcd--")
-locations <- rcsv("simpsons_locations.csv", col_types = "dcc") |>
-  rename(normalised_name = "normalized_name") |>
-  mutate(across("normalised_name", to_snake_case))
+locations <- rcsv("simpsons_locations.csv", col_types = "dcc")
 script_lines <- rcsv("simpsons_script_lines.csv", col_types = "dddcdlddccccd")
 
 ```
@@ -50,9 +55,44 @@ script_lines <- rcsv("simpsons_script_lines.csv", col_types = "dddcdlddccccd")
 ```{r data-view1}
 #| code-fold: false
 
-# tibble::glimpse(characters)
-# tibble::glimpse(episodes)
-# tibble::glimpse(locations)
-tibble::glimpse(script_lines)
+# glimpse(characters)
+# glimpse(episodes)
+# glimpse(locations)
+glimpse(script_lines)
+
+```
+
+```{r plot1}
+episodes2 <- episodes |>
+  select(
+    episode_id = "id",
+    "season"
+  )
+
+main_chars <- script_lines |>
+  filter(!is.na(raw_character_text)) |>
+  count(raw_character_text, sort = TRUE) |>
+  slice_head(n = 5) |>
+  pull(raw_character_text)
+
+
+script_lines |>
+  rename(character = "raw_character_text") |>
+  left_join(episodes2, "episode_id") |>
+  filter(character %in% main_chars) |>
+  summarise(
+    words = sum(word_count, na.rm = TRUE),
+    .by = c("character", "season")
+  ) |>
+  ggplot(aes(x = season, y = words)) +
+  geom_col(aes(fill = character), position = "dodge") +
+  labs(
+    title = "Words spoken by season by the top 5 'Simpsons' characters",
+    x = "Season",
+    y = "Words spoken"
+  ) +
+  theme_simpsons() +
+  scale_fill_simpsons(name = NULL)
+
 
 ```
