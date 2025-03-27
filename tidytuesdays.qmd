@@ -1,0 +1,31 @@
+---
+title: Quafira report
+author:
+  name: Fran Barton
+  email: francis.barton@nhs.net
+date: today
+lang: en-GB
+format: quafira-html
+embed-resources: true
+fig-dpi: 144
+fig-height: 10
+fig-width: 16.18
+fig-responsive: true
+lightbox: true
+out-width: 92%
+---
+
+## Introduction
+
+This is a default template for the `quafira` custom quarto format.
+
+You can learn more about `quafira` in its
+[Github repository](https://github.com/francisbarton/quafira)
+
+quafira is based on [bookup](https://github.com/juba/bookup-html) by Julien
+Barnier.
+Thanks Julien!
+
+You can learn more about controlling the appearance of HTML output at the
+[quarto website](https://quarto.org/docs/output-formats/html-basics.html).
+

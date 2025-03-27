@@ -1,0 +1,58 @@
+---
+title: The Simpsons x tidytuesday
+date: today
+author:
+  name: Fran Barton
+  email: francis.barton@nhs.net
+lang: en-GB
+format: quafira-html
+embed-resources: true
+fig-dpi: 144
+fig-height: 10
+fig-width: 16.18
+fig-responsive: true
+lightbox: true
+out-width: 92%
+code-fold: true
+execute:
+  warning: true
+  error: false
+knitr:
+  opts_knit:
+    message: true
+---
+
+```{r setup}
+library(dplyr)
+library(ggplot2)
+library(snakecase)
+library(readr)
+
+```
+
+```{r data-in}
+#| cache: true
+gh_tt_base <- "https://raw.githubusercontent.com/rfordatascience/tidytuesday/"
+gh_tt_base_data <- paste0(gh_tt_base, "main/data/")
+tt_date <- "2025/2025-02-04/"
+rcsv <- \(x, ...) read_csv(paste0(gh_tt_base_data, tt_date, x), ...)
+
+
+characters <- rcsv("simpsons_characters.csv", col_types = "dccc")
+episodes <- rcsv("simpsons_episodes.csv", col_types = "dcddddDdcdcd--")
+locations <- rcsv("simpsons_locations.csv", col_types = "dcc") |>
+  rename(normalised_name = "normalized_name") |>
+  mutate(across("normalised_name", to_snake_case))
+script_lines <- rcsv("simpsons_script_lines.csv", col_types = "dddcdlddccccd")
+
+```
+
+```{r data-view1}
+#| code-fold: false
+
+# tibble::glimpse(characters)
+# tibble::glimpse(episodes)
+# tibble::glimpse(locations)
+tibble::glimpse(script_lines)
+
+```
